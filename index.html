@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+  >
+  <title>歴史マッチングパズル</title>
+  <meta name="theme-color" content="#ff85a1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="歴史マッチ">
+  <meta name="description" content="時代と出来事を組み合わせるスマホ向け学習パズルです。">
+
+  <style>
+    :root {
+      --bg1: #fff5f5;
+      --bg2: #fffafc;
+      --card: #ffffff;
+      --main: #d63384;
+      --sub: #666;
+      --accent: #ff85a1;
+      --accent2: #fd7e14;
+      --line: #ffd6e0;
+      --soft: #fff0f6;
+      --ok: #28a745;
+      --ok-bg: #e9f9ee;
+      --ok-line: #8ce0a4;
+      --ng: #ef4444;
+      --ng-bg: #fff1f1;
+      --ng-line: #ffb3b3;
+      --shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+        "Yu Gothic", sans-serif;
+      color: #333;
+    }
+
+    body {
+      text-align: center;
+      padding:
+        calc(14px + var(--safe-top))
+        12px
+        calc(16px + var(--safe-bottom));
+    }
+
+    .app-shell {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .app-header {
+      margin-bottom: 12px;
+    }
+
+    .app-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      color: #c2255c;
+      background: #ffe3ec;
+      padding: 6px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 6px 0 6px;
+      color: var(--main);
+      font-size: 1.45rem;
+      line-height: 1.3;
+    }
+
+    .hint {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--sub);
+      line-height: 1.7;
+    }
+
+    #puzzle-container {
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-top: 16px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mini-chip {
+      background: var(--soft);
+      color: var(--main);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .column {
+      background: #fffafc;
+      border: 2px solid #ffe3ec;
+      border-radius: 18px;
+      padding: 10px;
+    }
+
+    .column-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--main);
+      margin-bottom: 8px;
+    }
+
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card {
+      background: #fff;
+      border: 2px solid #ffecf2;
+      border-radius: 14px;
+      padding: 12px 10px;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.5;
+      color: var(--main);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .event-card {
+      color: #7a284f;
+      font-size: 0.95rem;
+    }
+
+    .card:active {
+      transform: scale(0.98);
+    }
+
+    .card.selected {
+      background: #fff0f6;
+      border-color: var(--accent);
+      transform: scale(1.01);
+    }
+
+    .card.locked {
+      cursor: default;
+      opacity: 0.96;
+    }
+
+    .card.correct {
+      background: var(--ok-bg);
+      border-color: var(--ok-line);
+      color: #1f7a36;
+    }
+
+    .card.wrong {
+      background: var(--ng-bg);
+      border-color: var(--ng-line);
+      color: #c92a2a;
+    }
+
+    .match-log {
+      margin-top: 14px;
+      background: #fffafc;
+      border: 2px dashed #ffd6e0;
+      border-radius: 16px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .match-log-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--main);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .match-log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .log-ok {
+      color: #1f7a36;
+      font-weight: 700;
+    }
+
+    .log-ng {
+      color: #c92a2a;
+      font-weight: 700;
+    }
+
+    .button-group {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px 20px;
+      width: min(100%, 320px);
+      cursor: pointer;
+    }
+
+    .btn-check {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 6px 18px rgba(253, 126, 20, 0.22);
+    }
+
+    .btn-reset {
+      background: var(--soft);
+      color: var(--main);
+      border: 2px solid var(--line);
+    }
+
+    #result {
+      margin-top: 15px;
+      min-height: 3.2em;
+      font-weight: 700;
+      font-size: 1.02rem;
+      line-height: 1.65;
+      padding: 4px 6px;
+    }
+
+    .correct-text {
+      color: var(--ok);
+    }
+
+    .wrong-text {
+      color: var(--ng);
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.76rem;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 640px) {
+      .board {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="app-badge">時代と出来事をペアにしよう</div>
+      <h1>🌸 歴史マッチングパズル 🌸</h1>
+      <p class="hint">
+        左の時代を1つタップして、次に右の出来事を1つタップしてください。<br>
+        正しい組み合わせなら緑、ちがう組み合わせなら赤で表示されます。
+      </p>
+    </header>
+
+    <main id="puzzle-container">
+      <div class="top-bar">
+        <div class="mini-chip">全8組</div>
+        <div class="mini-chip" id="status-chip">時代を選んでください</div>
+      </div>
+
+      <div class="board">
+        <section class="column">
+          <div class="column-title">時代</div>
+          <div class="card-list" id="era-list"></div>
+        </section>
+
+        <section class="column">
+          <div class="column-title">出来事</div>
+          <div class="card-list" id="event-list"></div>
+        </section>
+      </div>
+
+      <div class="match-log">
+        <div class="match-log-title">組み合わせ結果</div>
+        <div class="match-log-list" id="match-log-list">
+          <div>まだ組み合わせていません。</div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-check" onclick="checkFinalResult()">できた！</button>
+        <button class="btn-reset" onclick="resetPuzzle()">もう一回あそぶ</button>
+      </div>
+
+      <div id="result"></div>
+
+      <div class="footer-note">
+        まずは時代の特徴をつかむのがコツです。
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const pairs = [
+      { era: "縄文", event: "土器を使い、狩りや採集をしていた" },
+      { era: "弥生", event: "米づくりが広まった" },
+      { era: "古墳", event: "大きなお墓がつくられた" },
+      { era: "飛鳥", event: "聖徳太子が活躍した" },
+      { era: "奈良", event: "大仏がつくられた" },
+      { era: "平安", event: "かな文字の文化が広まった" },
+      { era: "鎌倉", event: "武士の政治が始まった" },
+      { era: "江戸", event: "徳川将軍の時代が続いた" }
+    ];
+
+    const eraList = document.getElementById("era-list");
+    const eventList = document.getElementById("event-list");
+    const resultElement = document.getElementById("result");
+    const statusChip = document.getElementById("status-chip");
+    const matchLogList = document.getElementById("match-log-list");
+
+    let selectedEraCard = null;
+    let matchedCount = 0;
+
+    function shuffleArray(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function updateStatus(text) {
+      statusChip.textContent = text;
+    }
+
+    function clearSelections() {
+      document.querySelectorAll(".card.selected").forEach(card => {
+        card.classList.remove("selected");
+      });
+      selectedEraCard = null;
+    }
+
+    function renderCards() {
+      eraList.innerHTML = "";
+      eventList.innerHTML = "";
+
+      const shuffledEras = shuffleArray(pairs);
+      const shuffledEvents = shuffleArray(pairs);
+
+      shuffledEras.forEach((item) => {
+        const card = document.createElement("button");
+        card.className = "card era-card";
+        card.textContent = item.era;
+        card.dataset.era = item.era;
+        card.type = "button";
+        card.addEventListener("click", () => selectEra(card));
+        eraList.appendChild(card);
+      });
+
+      shuffledEvents.forEach((item) => {
+        const card = document.createElement("button");
+        card.className = "card event-card";
+        card.textContent = item.event;
+        card.dataset.event = item.event;
+        card.type = "button";
+        card.addEventListener("click", () => selectEvent(card));
+        eventList.appendChild(card);
+      });
+    }
+
+    function resetLog() {
+      matchLogList.innerHTML = "<div>まだ組み合わせていません。</div>";
+    }
+
+    function addLog(text, isCorrect) {
+      if (matchLogList.textContent.includes("まだ組み合わせていません。")) {
+        matchLogList.innerHTML = "";
+      }
+
+      const div = document.createElement("div");
+      div.className = isCorrect ? "log-ok" : "log-ng";
+      div.textContent = text;
+      matchLogList.prepend(div);
+    }
+
+    function selectEra(card) {
+      if (card.classList.contains("locked")) return;
+
+      document.querySelectorAll(".era-card").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedEraCard = card;
+      updateStatus("次に出来事を選んでください");
+    }
+
+    function selectEvent(card) {
+      if (!selectedEraCard) {
+        updateStatus("先に左の時代を選んでください");
+        return;
+      }
+
+      if (card.classList.contains("locked")) return;
+
+      card.classList.add("selected");
+
+      const selectedEra = selectedEraCard.dataset.era;
+      const selectedEvent = card.dataset.event;
+
+      const matchedPair = pairs.find(pair => pair.era === selectedEra);
+
+      if (matchedPair && matchedPair.event === selectedEvent) {
+        selectedEraCard.classList.remove("selected");
+        card.classList.remove("selected");
+
+        selectedEraCard.classList.add("correct", "locked");
+        card.classList.add("correct", "locked");
+
+        selectedEraCard.disabled = true;
+        card.disabled = true;
+
+        matchedCount++;
+        addLog(`○ ${selectedEra} － ${selectedEvent}`, true);
+        updateStatus(`正解 ${matchedCount} / ${pairs.length}`);
+      } else {
+        selectedEraCard.classList.remove("selected");
+        card.classList.remove("selected");
+
+        selectedEraCard.classList.add("wrong");
+        card.classList.add("wrong");
+
+        const eraCardRef = selectedEraCard;
+        const eventCardRef = card;
+
+        setTimeout(() => {
+          eraCardRef.classList.remove("wrong");
+          eventCardRef.classList.remove("wrong");
+        }, 700);
+
+        addLog(`× ${selectedEra} － ${selectedEvent}`, false);
+        updateStatus("ちがいます。もう一回！");
+      }
+
+      selectedEraCard = null;
+    }
+
+    function checkFinalResult() {
+      if (matchedCount === pairs.length) {
+        resultElement.innerHTML = "🎉 すごい！全部の組み合わせが正解です！<br>時代の特徴がよく分かっています。";
+        resultElement.className = "correct-text";
+        updateStatus("全問クリア！");
+      } else {
+        resultElement.innerHTML = `今の正解数は ${matchedCount} / ${pairs.length} です。<br>緑になっていないものを見直してみましょう。`;
+        resultElement.className = "wrong-text";
+        updateStatus(`${matchedCount}組正解`);
+      }
+    }
+
+    function resetPuzzle() {
+      matchedCount = 0;
+      selectedEraCard = null;
+      resultElement.innerHTML = "";
+      resultElement.className = "";
+      updateStatus("時代を選んでください");
+      resetLog();
+      renderCards();
+    }
+
+    resetPuzzle();
+  </script>
+</body>
+</html>

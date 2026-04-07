@@ -59,7 +59,7 @@
     }
 
     .app-shell {
-      max-width: 760px;
+      max-width: 860px;
       margin: 0 auto;
     }
 
@@ -99,6 +99,49 @@
       box-shadow: var(--shadow);
       padding: 14px;
       margin-top: 16px;
+    }
+
+    .settings-panel {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .setting-block {
+      background: #fffafc;
+      border: 2px solid #ffe3ec;
+      border-radius: 18px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .setting-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--main);
+      margin-bottom: 8px;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border: 2px solid var(--line);
+      background: #fff;
+      color: var(--main);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--soft);
+      border-color: var(--accent);
     }
 
     .top-bar {
@@ -165,6 +208,7 @@
       transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
       user-select: none;
       -webkit-user-select: none;
+      width: 100%;
     }
 
     .event-card {
@@ -222,6 +266,8 @@
       gap: 6px;
       font-size: 0.9rem;
       line-height: 1.5;
+      max-height: 220px;
+      overflow: auto;
     }
 
     .log-ok {
@@ -242,7 +288,7 @@
       align-items: center;
     }
 
-    button {
+    button.main-btn {
       appearance: none;
       -webkit-appearance: none;
       border: none;
@@ -300,17 +346,29 @@
 <body>
   <div class="app-shell">
     <header class="app-header">
-      <div class="app-badge">時代と出来事をペアにしよう</div>
+      <div class="app-badge">時代切り替え ＋ 難易度切り替え</div>
       <h1>🌸 歴史マッチングパズル 🌸</h1>
       <p class="hint">
-        左の時代を1つタップして、次に右の出来事を1つタップしてください。<br>
-        正しい組み合わせなら緑、ちがう組み合わせなら赤で表示されます。
+        時代と難易度を選んで、時代と出来事をペアにしてください。<br>
+        正しい組み合わせは緑、ちがう組み合わせは赤になります。
       </p>
     </header>
 
     <main id="puzzle-container">
+      <section class="settings-panel">
+        <div class="setting-block">
+          <div class="setting-title">時代を選ぶ</div>
+          <div class="chip-group" id="stage-chips"></div>
+        </div>
+
+        <div class="setting-block">
+          <div class="setting-title">難易度を選ぶ</div>
+          <div class="chip-group" id="level-chips"></div>
+        </div>
+      </section>
+
       <div class="top-bar">
-        <div class="mini-chip">全8組</div>
+        <div class="mini-chip" id="pair-count-chip">全0組</div>
         <div class="mini-chip" id="status-chip">時代を選んでください</div>
       </div>
 
@@ -334,36 +392,185 @@
       </div>
 
       <div class="button-group">
-        <button class="btn-check" onclick="checkFinalResult()">できた！</button>
-        <button class="btn-reset" onclick="resetPuzzle()">もう一回あそぶ</button>
+        <button class="main-btn btn-check" onclick="checkFinalResult()">できた！</button>
+        <button class="main-btn btn-reset" onclick="resetPuzzle()">もう一回あそぶ</button>
       </div>
 
       <div id="result"></div>
 
       <div class="footer-note">
-        まずは時代の特徴をつかむのがコツです。
+        初級は代表的な出来事、中級は人物や文化、上級は少し細かい内容も入っています。
       </div>
     </main>
   </div>
 
   <script>
-    const pairs = [
-      { era: "縄文", event: "土器を使い、狩りや採集をしていた" },
-      { era: "弥生", event: "米づくりが広まった" },
-      { era: "古墳", event: "大きなお墓がつくられた" },
-      { era: "飛鳥", event: "聖徳太子が活躍した" },
-      { era: "奈良", event: "大仏がつくられた" },
-      { era: "平安", event: "かな文字の文化が広まった" },
-      { era: "鎌倉", event: "武士の政治が始まった" },
-      { era: "江戸", event: "徳川将軍の時代が続いた" }
+    const puzzleData = {
+      ancient: {
+        label: "古代",
+        beginner: [
+          { era: "縄文", event: "土器を使い、狩りや採集をしていた" },
+          { era: "弥生", event: "米づくりが広まった" },
+          { era: "古墳", event: "大きなお墓がつくられた" },
+          { era: "飛鳥", event: "聖徳太子が活躍した" },
+          { era: "奈良", event: "大仏がつくられた" },
+          { era: "平安", event: "かな文字の文化が広まった" }
+        ],
+        intermediate: [
+          { era: "縄文", event: "竪穴住居で暮らし、土偶がつくられた" },
+          { era: "弥生", event: "金属器が広まり、むらから国へ発展した" },
+          { era: "古墳", event: "埴輪が並ぶ古墳が各地につくられた" },
+          { era: "飛鳥", event: "冠位十二階や十七条の憲法が定められた" },
+          { era: "奈良", event: "東大寺や正倉院などの文化が栄えた" },
+          { era: "平安", event: "紫式部や清少納言が活躍した" }
+        ],
+        advanced: [
+          { era: "縄文", event: "貝塚がつくられ、定住生活が進んだ" },
+          { era: "弥生", event: "登呂遺跡に見られるような水田耕作が広まった" },
+          { era: "古墳", event: "大王中心の政治が進み、前方後円墳が広がった" },
+          { era: "飛鳥", event: "仏教が広まり、蘇我氏と物部氏が争った" },
+          { era: "奈良", event: "国ごとに国分寺が建てられた" },
+          { era: "平安", event: "遣唐使が廃止され、日本風の文化が育った" }
+        ]
+      },
+      medieval: {
+        label: "中世〜近世",
+        beginner: [
+          { era: "鎌倉", event: "武士の政治が始まった" },
+          { era: "南北朝", event: "朝廷が南と北に分かれた" },
+          { era: "室町", event: "足利氏の幕府が続いた" },
+          { era: "戦国", event: "大名どうしの戦いが続いた" },
+          { era: "安土桃山", event: "織田信長と豊臣秀吉が活躍した" },
+          { era: "江戸", event: "徳川将軍の時代が続いた" }
+        ],
+        intermediate: [
+          { era: "鎌倉", event: "源頼朝が幕府を開いた" },
+          { era: "南北朝", event: "後醍醐天皇のあと、朝廷が分かれた" },
+          { era: "室町", event: "金閣や銀閣に代表される文化が栄えた" },
+          { era: "戦国", event: "鉄砲が伝わり、城づくりが進んだ" },
+          { era: "安土桃山", event: "刀狩や太閤検地が行われた" },
+          { era: "江戸", event: "参勤交代や鎖国のしくみが整えられた" }
+        ],
+        advanced: [
+          { era: "鎌倉", event: "御恩と奉公で主従関係が結ばれた" },
+          { era: "南北朝", event: "足利尊氏の動きから武家政権が変化した" },
+          { era: "室町", event: "応仁の乱のあと、全国の統一がくずれた" },
+          { era: "戦国", event: "下剋上が広まり、実力で地位を得る時代になった" },
+          { era: "安土桃山", event: "南蛮貿易やキリスト教の広がりが見られた" },
+          { era: "江戸", event: "元禄文化や化政文化など町人文化が発展した" }
+        ]
+      },
+      modern: {
+        label: "近代〜現代",
+        beginner: [
+          { era: "明治", event: "明治維新で国の仕組みが大きく変わった" },
+          { era: "大正", event: "民主主義の動きが広がった" },
+          { era: "昭和", event: "戦争と復興を経験した" },
+          { era: "平成", event: "インターネットが広く使われるようになった" },
+          { era: "令和", event: "今の時代" }
+        ],
+        intermediate: [
+          { era: "明治", event: "文明開化や学制の発布が進んだ" },
+          { era: "大正", event: "普通選挙への動きや大正デモクラシーが見られた" },
+          { era: "昭和", event: "東京オリンピックや高度経済成長があった" },
+          { era: "平成", event: "バブル崩壊や情報化社会が進んだ" },
+          { era: "令和", event: "新しい元号として始まった" }
+        ],
+        advanced: [
+          { era: "明治", event: "廃藩置県や憲法制定で近代国家づくりが進んだ" },
+          { era: "大正", event: "米騒動や政党政治の発展が見られた" },
+          { era: "昭和", event: "太平洋戦争、戦後復興、高度経済成長を経験した" },
+          { era: "平成", event: "阪神・淡路大震災や東日本大震災が起きた時代でもある" },
+          { era: "令和", event: "社会や技術の変化が今も続いている" }
+        ]
+      },
+      all: {
+        label: "全時代",
+        beginner: [
+          { era: "縄文", event: "土器を使い、狩りや採集をしていた" },
+          { era: "弥生", event: "米づくりが広まった" },
+          { era: "古墳", event: "大きなお墓がつくられた" },
+          { era: "飛鳥", event: "聖徳太子が活躍した" },
+          { era: "奈良", event: "大仏がつくられた" },
+          { era: "平安", event: "かな文字の文化が広まった" },
+          { era: "鎌倉", event: "武士の政治が始まった" },
+          { era: "南北朝", event: "朝廷が南と北に分かれた" },
+          { era: "室町", event: "足利氏の幕府が続いた" },
+          { era: "戦国", event: "大名どうしの戦いが続いた" },
+          { era: "安土桃山", event: "織田信長と豊臣秀吉が活躍した" },
+          { era: "江戸", event: "徳川将軍の時代が続いた" },
+          { era: "明治", event: "明治維新で国の仕組みが大きく変わった" },
+          { era: "大正", event: "民主主義の動きが広がった" },
+          { era: "昭和", event: "戦争と復興を経験した" },
+          { era: "平成", event: "インターネットが広く使われるようになった" },
+          { era: "令和", event: "今の時代" }
+        ],
+        intermediate: [
+          { era: "縄文", event: "竪穴住居で暮らし、土偶がつくられた" },
+          { era: "弥生", event: "金属器が広まり、むらから国へ発展した" },
+          { era: "古墳", event: "埴輪が並ぶ古墳が各地につくられた" },
+          { era: "飛鳥", event: "冠位十二階や十七条の憲法が定められた" },
+          { era: "奈良", event: "東大寺や正倉院などの文化が栄えた" },
+          { era: "平安", event: "紫式部や清少納言が活躍した" },
+          { era: "鎌倉", event: "源頼朝が幕府を開いた" },
+          { era: "南北朝", event: "後醍醐天皇のあと、朝廷が分かれた" },
+          { era: "室町", event: "金閣や銀閣に代表される文化が栄えた" },
+          { era: "戦国", event: "鉄砲が伝わり、城づくりが進んだ" },
+          { era: "安土桃山", event: "刀狩や太閤検地が行われた" },
+          { era: "江戸", event: "参勤交代や鎖国のしくみが整えられた" },
+          { era: "明治", event: "文明開化や学制の発布が進んだ" },
+          { era: "大正", event: "普通選挙への動きや大正デモクラシーが見られた" },
+          { era: "昭和", event: "東京オリンピックや高度経済成長があった" },
+          { era: "平成", event: "バブル崩壊や情報化社会が進んだ" },
+          { era: "令和", event: "新しい元号として始まった" }
+        ],
+        advanced: [
+          { era: "縄文", event: "貝塚がつくられ、定住生活が進んだ" },
+          { era: "弥生", event: "登呂遺跡に見られるような水田耕作が広まった" },
+          { era: "古墳", event: "大王中心の政治が進み、前方後円墳が広がった" },
+          { era: "飛鳥", event: "仏教が広まり、蘇我氏と物部氏が争った" },
+          { era: "奈良", event: "国ごとに国分寺が建てられた" },
+          { era: "平安", event: "遣唐使が廃止され、日本風の文化が育った" },
+          { era: "鎌倉", event: "御恩と奉公で主従関係が結ばれた" },
+          { era: "南北朝", event: "足利尊氏の動きから武家政権が変化した" },
+          { era: "室町", event: "応仁の乱のあと、全国の統一がくずれた" },
+          { era: "戦国", event: "下剋上が広まり、実力で地位を得る時代になった" },
+          { era: "安土桃山", event: "南蛮貿易やキリスト教の広がりが見られた" },
+          { era: "江戸", event: "元禄文化や化政文化など町人文化が発展した" },
+          { era: "明治", event: "廃藩置県や憲法制定で近代国家づくりが進んだ" },
+          { era: "大正", event: "米騒動や政党政治の発展が見られた" },
+          { era: "昭和", event: "太平洋戦争、戦後復興、高度経済成長を経験した" },
+          { era: "平成", event: "阪神・淡路大震災や東日本大震災が起きた時代でもある" },
+          { era: "令和", event: "社会や技術の変化が今も続いている" }
+        ]
+      }
+    };
+
+    const stageOptions = [
+      { key: "ancient", label: "古代" },
+      { key: "medieval", label: "中世〜近世" },
+      { key: "modern", label: "近代〜現代" },
+      { key: "all", label: "全時代" }
     ];
 
+    const levelOptions = [
+      { key: "beginner", label: "初級" },
+      { key: "intermediate", label: "中級" },
+      { key: "advanced", label: "上級" }
+    ];
+
+    const stageChips = document.getElementById("stage-chips");
+    const levelChips = document.getElementById("level-chips");
     const eraList = document.getElementById("era-list");
     const eventList = document.getElementById("event-list");
     const resultElement = document.getElementById("result");
     const statusChip = document.getElementById("status-chip");
+    const pairCountChip = document.getElementById("pair-count-chip");
     const matchLogList = document.getElementById("match-log-list");
 
+    let currentStage = "ancient";
+    let currentLevel = "beginner";
+    let currentPairs = [];
     let selectedEraCard = null;
     let matchedCount = 0;
 
@@ -375,6 +582,10 @@
       statusChip.textContent = text;
     }
 
+    function updatePairCount() {
+      pairCountChip.textContent = "全" + currentPairs.length + "組";
+    }
+
     function clearSelections() {
       document.querySelectorAll(".card.selected").forEach(card => {
         card.classList.remove("selected");
@@ -382,12 +593,59 @@
       selectedEraCard = null;
     }
 
+    function resetLog() {
+      matchLogList.innerHTML = "<div>まだ組み合わせていません。</div>";
+    }
+
+    function addLog(text, isCorrect) {
+      if (matchLogList.textContent.includes("まだ組み合わせていません。")) {
+        matchLogList.innerHTML = "";
+      }
+      const div = document.createElement("div");
+      div.className = isCorrect ? "log-ok" : "log-ng";
+      div.textContent = text;
+      matchLogList.prepend(div);
+    }
+
+    function buildChips() {
+      stageChips.innerHTML = "";
+      levelChips.innerHTML = "";
+
+      stageOptions.forEach(option => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip" + (option.key === currentStage ? " active" : "");
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => {
+          currentStage = option.key;
+          refreshPuzzle();
+        });
+        stageChips.appendChild(btn);
+      });
+
+      levelOptions.forEach(option => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip" + (option.key === currentLevel ? " active" : "");
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => {
+          currentLevel = option.key;
+          refreshPuzzle();
+        });
+        levelChips.appendChild(btn);
+      });
+    }
+
+    function getCurrentPairs() {
+      return puzzleData[currentStage][currentLevel];
+    }
+
     function renderCards() {
       eraList.innerHTML = "";
       eventList.innerHTML = "";
 
-      const shuffledEras = shuffleArray(pairs);
-      const shuffledEvents = shuffleArray(pairs);
+      const shuffledEras = shuffleArray(currentPairs);
+      const shuffledEvents = shuffleArray(currentPairs);
 
       shuffledEras.forEach((item) => {
         const card = document.createElement("button");
@@ -410,24 +668,8 @@
       });
     }
 
-    function resetLog() {
-      matchLogList.innerHTML = "<div>まだ組み合わせていません。</div>";
-    }
-
-    function addLog(text, isCorrect) {
-      if (matchLogList.textContent.includes("まだ組み合わせていません。")) {
-        matchLogList.innerHTML = "";
-      }
-
-      const div = document.createElement("div");
-      div.className = isCorrect ? "log-ok" : "log-ng";
-      div.textContent = text;
-      matchLogList.prepend(div);
-    }
-
     function selectEra(card) {
       if (card.classList.contains("locked")) return;
-
       document.querySelectorAll(".era-card").forEach(c => c.classList.remove("selected"));
       card.classList.add("selected");
       selectedEraCard = card;
@@ -446,8 +688,7 @@
 
       const selectedEra = selectedEraCard.dataset.era;
       const selectedEvent = card.dataset.event;
-
-      const matchedPair = pairs.find(pair => pair.era === selectedEra);
+      const matchedPair = currentPairs.find(pair => pair.era === selectedEra);
 
       if (matchedPair && matchedPair.event === selectedEvent) {
         selectedEraCard.classList.remove("selected");
@@ -460,8 +701,8 @@
         card.disabled = true;
 
         matchedCount++;
-        addLog(`○ ${selectedEra} － ${selectedEvent}`, true);
-        updateStatus(`正解 ${matchedCount} / ${pairs.length}`);
+        addLog("○ " + selectedEra + " － " + selectedEvent, true);
+        updateStatus("正解 " + matchedCount + " / " + currentPairs.length);
       } else {
         selectedEraCard.classList.remove("selected");
         card.classList.remove("selected");
@@ -477,7 +718,7 @@
           eventCardRef.classList.remove("wrong");
         }, 700);
 
-        addLog(`× ${selectedEra} － ${selectedEvent}`, false);
+        addLog("× " + selectedEra + " － " + selectedEvent, false);
         updateStatus("ちがいます。もう一回！");
       }
 
@@ -485,28 +726,35 @@
     }
 
     function checkFinalResult() {
-      if (matchedCount === pairs.length) {
-        resultElement.innerHTML = "🎉 すごい！全部の組み合わせが正解です！<br>時代の特徴がよく分かっています。";
+      if (matchedCount === currentPairs.length) {
+        resultElement.innerHTML = "🎉 すごい！全部の組み合わせが正解です！<br>このステージは完ぺきです。";
         resultElement.className = "correct-text";
         updateStatus("全問クリア！");
       } else {
-        resultElement.innerHTML = `今の正解数は ${matchedCount} / ${pairs.length} です。<br>緑になっていないものを見直してみましょう。`;
+        resultElement.innerHTML = "今の正解数は " + matchedCount + " / " + currentPairs.length + " です。<br>緑になっていないものを見直してみましょう。";
         resultElement.className = "wrong-text";
-        updateStatus(`${matchedCount}組正解`);
+        updateStatus(matchedCount + "組正解");
       }
     }
 
+    function refreshPuzzle() {
+      buildChips();
+      resetPuzzle();
+    }
+
     function resetPuzzle() {
+      currentPairs = getCurrentPairs();
       matchedCount = 0;
       selectedEraCard = null;
       resultElement.innerHTML = "";
       resultElement.className = "";
       updateStatus("時代を選んでください");
+      updatePairCount();
       resetLog();
       renderCards();
     }
 
-    resetPuzzle();
+    refreshPuzzle();
   </script>
 </body>
 </html>

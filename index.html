@@ -30,6 +30,9 @@
       --ng: #ef4444;
       --ng-bg: #fff1f1;
       --ng-line: #ffb3b3;
+      --gold: #f59f00;
+      --gold-bg: #fff9db;
+      --gold-line: #ffe066;
       --shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -312,6 +315,12 @@
       border: 2px solid var(--line);
     }
 
+    .btn-next {
+      color: #6b4f00;
+      background: linear-gradient(135deg, #ffe066, #ffd43b);
+      box-shadow: 0 6px 18px rgba(245, 159, 0, 0.22);
+    }
+
     #result {
       margin-top: 15px;
       min-height: 3.2em;
@@ -327,6 +336,22 @@
 
     .wrong-text {
       color: var(--ng);
+    }
+
+    .reward-box {
+      margin-top: 14px;
+      background: var(--gold-bg);
+      border: 2px solid var(--gold-line);
+      border-radius: 18px;
+      padding: 14px;
+      color: #7a5b00;
+      font-weight: 700;
+      line-height: 1.7;
+      display: none;
+    }
+
+    .reward-box.show {
+      display: block;
     }
 
     .footer-note {
@@ -346,11 +371,11 @@
 <body>
   <div class="app-shell">
     <header class="app-header">
-      <div class="app-badge">時代切り替え ＋ 難易度切り替え</div>
+      <div class="app-badge">時代切り替え ＋ 難易度切り替え ＋ つぎへ進む</div>
       <h1>🌸 歴史マッチングパズル 🌸</h1>
       <p class="hint">
         時代と難易度を選んで、時代と出来事をペアにしてください。<br>
-        正しい組み合わせは緑、ちがう組み合わせは赤になります。
+        全問正解すると、次のステージへ進めます。
       </p>
     </header>
 
@@ -393,10 +418,13 @@
 
       <div class="button-group">
         <button class="main-btn btn-check" onclick="checkFinalResult()">できた！</button>
+        <button class="main-btn btn-next" id="next-button" onclick="goToNextStage()" style="display:none;">つぎのステージへ</button>
         <button class="main-btn btn-reset" onclick="resetPuzzle()">もう一回あそぶ</button>
       </div>
 
       <div id="result"></div>
+
+      <div class="reward-box" id="reward-box"></div>
 
       <div class="footer-note">
         初級は代表的な出来事、中級は人物や文化、上級は少し細かい内容も入っています。
@@ -567,6 +595,8 @@
     const statusChip = document.getElementById("status-chip");
     const pairCountChip = document.getElementById("pair-count-chip");
     const matchLogList = document.getElementById("match-log-list");
+    const nextButton = document.getElementById("next-button");
+    const rewardBox = document.getElementById("reward-box");
 
     let currentStage = "ancient";
     let currentLevel = "beginner";
@@ -584,13 +614,6 @@
 
     function updatePairCount() {
       pairCountChip.textContent = "全" + currentPairs.length + "組";
-    }
-
-    function clearSelections() {
-      document.querySelectorAll(".card.selected").forEach(card => {
-        card.classList.remove("selected");
-      });
-      selectedEraCard = null;
     }
 
     function resetLog() {
@@ -730,11 +753,46 @@
         resultElement.innerHTML = "🎉 すごい！全部の組み合わせが正解です！<br>このステージは完ぺきです。";
         resultElement.className = "correct-text";
         updateStatus("全問クリア！");
+        nextButton.style.display = "block";
+        showRewardMessage();
       } else {
         resultElement.innerHTML = "今の正解数は " + matchedCount + " / " + currentPairs.length + " です。<br>緑になっていないものを見直してみましょう。";
         resultElement.className = "wrong-text";
         updateStatus(matchedCount + "組正解");
+        nextButton.style.display = "none";
+        rewardBox.classList.remove("show");
       }
+    }
+
+    function showRewardMessage() {
+      const isLastStage = currentStage === "all" && currentLevel === "advanced";
+
+      if (isLastStage) {
+        rewardBox.innerHTML = "🏆 おめでとうございます！<br>全時代・全難易度クリアです。<br>もう立派な歴史マスターですね。";
+      } else {
+        rewardBox.innerHTML = "🌟 ステージクリア！<br>この調子で、次のステージにも挑戦してみましょう。";
+      }
+
+      rewardBox.classList.add("show");
+    }
+
+    function goToNextStage() {
+      const currentLevelIndex = levelOptions.findIndex(item => item.key === currentLevel);
+      const currentStageIndex = stageOptions.findIndex(item => item.key === currentStage);
+
+      if (currentLevelIndex < levelOptions.length - 1) {
+        currentLevel = levelOptions[currentLevelIndex + 1].key;
+      } else if (currentStageIndex < stageOptions.length - 1) {
+        currentStage = stageOptions[currentStageIndex + 1].key;
+        currentLevel = levelOptions[0].key;
+      } else {
+        rewardBox.innerHTML = "🏆 すべてのステージをクリアしました！<br>最初からもう一回遊ぶこともできます。";
+        rewardBox.classList.add("show");
+        nextButton.style.display = "none";
+        return;
+      }
+
+      refreshPuzzle();
     }
 
     function refreshPuzzle() {
@@ -748,6 +806,8 @@
       selectedEraCard = null;
       resultElement.innerHTML = "";
       resultElement.className = "";
+      nextButton.style.display = "none";
+      rewardBox.classList.remove("show");
       updateStatus("時代を選んでください");
       updatePairCount();
       resetLog();

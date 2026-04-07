@@ -2,16 +2,13 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-  >
-  <title>歴史マッチングパズル</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>歴史総合パズル</title>
   <meta name="theme-color" content="#ff85a1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="歴史マッチ">
-  <meta name="description" content="時代と出来事を組み合わせるスマホ向け学習パズルです。">
+  <meta name="apple-mobile-web-app-title" content="歴史総合">
+  <meta name="description" content="人物・出来事・時代をまとめて学べるスマホ向け歴史総合パズルです。">
 
   <style>
     :root {
@@ -24,16 +21,16 @@
       --accent2: #fd7e14;
       --line: #ffd6e0;
       --soft: #fff0f6;
-      --ok: #28a745;
-      --ok-bg: #e9f9ee;
-      --ok-line: #8ce0a4;
-      --ng: #ef4444;
-      --ng-bg: #fff1f1;
-      --ng-line: #ffb3b3;
+      --ok: #2b8a3e;
+      --ok-bg: #ebfbee;
+      --ok-line: #8ce99a;
+      --ng: #e03131;
+      --ng-bg: #fff5f5;
+      --ng-line: #ffa8a8;
       --gold: #f59f00;
       --gold-bg: #fff9db;
       --gold-line: #ffe066;
-      --shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      --shadow: 0 12px 28px rgba(0,0,0,.08);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -47,32 +44,24 @@
       margin: 0;
       padding: 0;
       min-height: 100%;
-      background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
-        "Yu Gothic", sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
       color: #333;
     }
 
     body {
       text-align: center;
-      padding:
-        calc(14px + var(--safe-top))
-        12px
-        calc(16px + var(--safe-bottom));
+      padding: calc(14px + var(--safe-top)) 12px calc(18px + var(--safe-bottom));
     }
 
-    .app-shell {
-      max-width: 860px;
+    .app {
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    .app-header {
-      margin-bottom: 12px;
-    }
-
-    .app-badge {
+    .badge {
       display: inline-block;
-      font-size: 0.72rem;
+      font-size: .72rem;
       color: #c2255c;
       background: #ffe3ec;
       padding: 6px 10px;
@@ -88,14 +77,15 @@
       line-height: 1.3;
     }
 
-    .hint {
-      margin: 0;
-      font-size: 0.92rem;
+    .lead {
+      margin: 0 auto 14px;
+      font-size: .92rem;
       color: var(--sub);
       line-height: 1.7;
+      max-width: 760px;
     }
 
-    #puzzle-container {
+    .panel {
       background: var(--card);
       border: 2px solid var(--line);
       border-radius: 24px;
@@ -104,7 +94,7 @@
       margin-top: 16px;
     }
 
-    .settings-panel {
+    .settings {
       display: grid;
       gap: 12px;
       margin-bottom: 14px;
@@ -119,7 +109,7 @@
     }
 
     .setting-title {
-      font-size: 0.9rem;
+      font-size: .9rem;
       font-weight: 700;
       color: var(--main);
       margin-bottom: 8px;
@@ -137,7 +127,7 @@
       color: var(--main);
       border-radius: 999px;
       padding: 8px 12px;
-      font-size: 0.88rem;
+      font-size: .88rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -147,13 +137,12 @@
       border-color: var(--accent);
     }
 
-    .top-bar {
+    .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       gap: 8px;
-      margin-bottom: 12px;
       flex-wrap: wrap;
+      margin-bottom: 12px;
     }
 
     .mini-chip {
@@ -162,13 +151,13 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 6px 10px;
-      font-size: 0.76rem;
+      font-size: .76rem;
       font-weight: 700;
     }
 
     .board {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 0.9fr 1.1fr;
       gap: 12px;
       margin-top: 10px;
     }
@@ -181,7 +170,7 @@
     }
 
     .column-title {
-      font-size: 0.95rem;
+      font-size: .95rem;
       font-weight: 700;
       color: var(--main);
       margin-bottom: 8px;
@@ -194,6 +183,7 @@
     }
 
     .card {
+      width: 100%;
       background: #fff;
       border: 2px solid #ffecf2;
       border-radius: 14px;
@@ -206,21 +196,37 @@
       font-weight: 700;
       line-height: 1.5;
       color: var(--main);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
       cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
       user-select: none;
       -webkit-user-select: none;
-      width: 100%;
+      border: 2px solid #ffecf2;
     }
 
-    .event-card {
+    .mix-card {
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 6px;
+      padding: 12px;
+    }
+
+    .mix-person {
+      font-size: .95rem;
       color: #7a284f;
-      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .mix-event {
+      font-size: .86rem;
+      color: #555;
+      line-height: 1.6;
+      font-weight: 700;
     }
 
     .card:active {
-      transform: scale(0.98);
+      transform: scale(.98);
     }
 
     .card.selected {
@@ -231,22 +237,32 @@
 
     .card.locked {
       cursor: default;
-      opacity: 0.96;
+      opacity: .96;
     }
 
     .card.correct {
       background: var(--ok-bg);
       border-color: var(--ok-line);
-      color: #1f7a36;
+      color: var(--ok);
+    }
+
+    .card.correct .mix-person,
+    .card.correct .mix-event {
+      color: var(--ok);
     }
 
     .card.wrong {
       background: var(--ng-bg);
       border-color: var(--ng-line);
-      color: #c92a2a;
+      color: var(--ng);
     }
 
-    .match-log {
+    .card.wrong .mix-person,
+    .card.wrong .mix-event {
+      color: var(--ng);
+    }
+
+    .log {
       margin-top: 14px;
       background: #fffafc;
       border: 2px dashed #ffd6e0;
@@ -255,35 +271,35 @@
       text-align: left;
     }
 
-    .match-log-title {
-      font-size: 0.9rem;
+    .log-title {
+      font-size: .9rem;
       font-weight: 700;
       color: var(--main);
       margin-bottom: 8px;
       text-align: center;
     }
 
-    .match-log-list {
+    .log-list {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      font-size: 0.9rem;
+      font-size: .9rem;
       line-height: 1.5;
       max-height: 220px;
       overflow: auto;
     }
 
     .log-ok {
-      color: #1f7a36;
+      color: var(--ok);
       font-weight: 700;
     }
 
     .log-ng {
-      color: #c92a2a;
+      color: var(--ng);
       font-weight: 700;
     }
 
-    .button-group {
+    .buttons {
       margin-top: 14px;
       display: flex;
       flex-direction: column;
@@ -291,7 +307,7 @@
       align-items: center;
     }
 
-    button.main-btn {
+    .main-btn {
       appearance: none;
       -webkit-appearance: none;
       border: none;
@@ -303,22 +319,22 @@
       cursor: pointer;
     }
 
-    .btn-check {
+    .check-btn {
       color: #fff;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 6px 18px rgba(253, 126, 20, 0.22);
+      box-shadow: 0 6px 18px rgba(253,126,20,.22);
     }
 
-    .btn-reset {
+    .reset-btn {
       background: var(--soft);
       color: var(--main);
       border: 2px solid var(--line);
     }
 
-    .btn-next {
+    .next-btn {
       color: #6b4f00;
       background: linear-gradient(135deg, #ffe066, #ffd43b);
-      box-shadow: 0 6px 18px rgba(245, 159, 0, 0.22);
+      box-shadow: 0 6px 18px rgba(245,159,0,.22);
     }
 
     #result {
@@ -330,15 +346,10 @@
       padding: 4px 6px;
     }
 
-    .correct-text {
-      color: var(--ok);
-    }
+    .ok-text { color: var(--ok); }
+    .ng-text { color: var(--ng); }
 
-    .wrong-text {
-      color: var(--ng);
-    }
-
-    .reward-box {
+    .reward {
       margin-top: 14px;
       background: var(--gold-bg);
       border: 2px solid var(--gold-line);
@@ -350,37 +361,44 @@
       display: none;
     }
 
-    .reward-box.show {
+    .reward.show {
       display: block;
     }
 
-    .footer-note {
+    .note {
       margin-top: 12px;
-      font-size: 0.76rem;
+      font-size: .76rem;
       color: #777;
       line-height: 1.6;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 700px) {
       .board {
         grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 1.34rem;
+      }
+      .mix-person {
+        font-size: .92rem;
+      }
+      .mix-event {
+        font-size: .82rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="app-header">
-      <div class="app-badge">時代切り替え ＋ 難易度切り替え ＋ つぎへ進む</div>
-      <h1>🌸 歴史マッチングパズル 🌸</h1>
-      <p class="hint">
-        時代と難易度を選んで、時代と出来事をペアにしてください。<br>
-        全問正解すると、次のステージへ進めます。
-      </p>
-    </header>
+  <div class="app">
+    <div class="badge">人物＋出来事＋時代の総合パズル</div>
+    <h1>🌸 歴史総合パズル 🌸</h1>
+    <p class="lead">
+      左の時代を1つ選んで、次に右のカードを1つ選んでください。<br>
+      人物と出来事の両方が、その時代に合っていれば正解です。
+    </p>
 
-    <main id="puzzle-container">
-      <section class="settings-panel">
+    <div class="panel">
+      <section class="settings">
         <div class="setting-block">
           <div class="setting-title">時代を選ぶ</div>
           <div class="chip-group" id="stage-chips"></div>
@@ -392,8 +410,8 @@
         </div>
       </section>
 
-      <div class="top-bar">
-        <div class="mini-chip" id="pair-count-chip">全0組</div>
+      <div class="topbar">
+        <div class="mini-chip" id="count-chip">全0組</div>
         <div class="mini-chip" id="status-chip">時代を選んでください</div>
       </div>
 
@@ -404,32 +422,31 @@
         </section>
 
         <section class="column">
-          <div class="column-title">出来事</div>
-          <div class="card-list" id="event-list"></div>
+          <div class="column-title">人物＋出来事</div>
+          <div class="card-list" id="mix-list"></div>
         </section>
       </div>
 
-      <div class="match-log">
-        <div class="match-log-title">組み合わせ結果</div>
-        <div class="match-log-list" id="match-log-list">
+      <div class="log">
+        <div class="log-title">組み合わせ結果</div>
+        <div class="log-list" id="log-list">
           <div>まだ組み合わせていません。</div>
         </div>
       </div>
 
-      <div class="button-group">
-        <button class="main-btn btn-check" onclick="checkFinalResult()">できた！</button>
-        <button class="main-btn btn-next" id="next-button" onclick="goToNextStage()" style="display:none;">つぎのステージへ</button>
-        <button class="main-btn btn-reset" onclick="resetPuzzle()">もう一回あそぶ</button>
+      <div class="buttons">
+        <button class="main-btn check-btn" onclick="checkFinalResult()">できた！</button>
+        <button class="main-btn next-btn" id="next-button" onclick="goToNextStage()" style="display:none;">つぎのステージへ</button>
+        <button class="main-btn reset-btn" onclick="resetPuzzle()">もう一回あそぶ</button>
       </div>
 
       <div id="result"></div>
+      <div class="reward" id="reward-box"></div>
 
-      <div class="reward-box" id="reward-box"></div>
-
-      <div class="footer-note">
-        初級は代表的な出来事、中級は人物や文化、上級は少し細かい内容も入っています。
+      <div class="note">
+        初級は代表人物と代表出来事、中級は定番知識、上級は少し細かい内容を入れています。
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
@@ -437,139 +454,124 @@
       ancient: {
         label: "古代",
         beginner: [
-          { era: "縄文", event: "土器を使い、狩りや採集をしていた" },
-          { era: "弥生", event: "米づくりが広まった" },
-          { era: "古墳", event: "大きなお墓がつくられた" },
-          { era: "飛鳥", event: "聖徳太子が活躍した" },
-          { era: "奈良", event: "大仏がつくられた" },
-          { era: "平安", event: "かな文字の文化が広まった" }
+          { era: "飛鳥", person: "聖徳太子", event: "十七条の憲法を定めた" },
+          { era: "奈良", person: "聖武天皇", event: "大仏づくりを進めた" },
+          { era: "平安", person: "紫式部", event: "『源氏物語』を書いた" },
+          { era: "平安", person: "清少納言", event: "『枕草子』を書いた" }
         ],
         intermediate: [
-          { era: "縄文", event: "竪穴住居で暮らし、土偶がつくられた" },
-          { era: "弥生", event: "金属器が広まり、むらから国へ発展した" },
-          { era: "古墳", event: "埴輪が並ぶ古墳が各地につくられた" },
-          { era: "飛鳥", event: "冠位十二階や十七条の憲法が定められた" },
-          { era: "奈良", event: "東大寺や正倉院などの文化が栄えた" },
-          { era: "平安", event: "紫式部や清少納言が活躍した" }
+          { era: "飛鳥", person: "中大兄皇子", event: "大化の改新を進めた" },
+          { era: "飛鳥", person: "中臣鎌足", event: "大化の改新で活躍した" },
+          { era: "奈良", person: "鑑真", event: "日本に正式な戒律を伝えた" },
+          { era: "平安", person: "藤原道長", event: "藤原氏の勢いを強めた" },
+          { era: "平安", person: "最澄", event: "天台宗を広めた" },
+          { era: "平安", person: "空海", event: "真言宗を広めた" }
         ],
         advanced: [
-          { era: "縄文", event: "貝塚がつくられ、定住生活が進んだ" },
-          { era: "弥生", event: "登呂遺跡に見られるような水田耕作が広まった" },
-          { era: "古墳", event: "大王中心の政治が進み、前方後円墳が広がった" },
-          { era: "飛鳥", event: "仏教が広まり、蘇我氏と物部氏が争った" },
-          { era: "奈良", event: "国ごとに国分寺が建てられた" },
-          { era: "平安", event: "遣唐使が廃止され、日本風の文化が育った" }
+          { era: "飛鳥", person: "蘇我馬子", event: "仏教を保護した" },
+          { era: "飛鳥", person: "小野妹子", event: "遣隋使として中国へ渡った" },
+          { era: "奈良", person: "行基", event: "民衆のために活動し、大仏建立にも関わった" },
+          { era: "奈良", person: "聖武天皇", event: "国分寺や国分尼寺を建てさせた" },
+          { era: "平安", person: "菅原道真", event: "学問で名を上げた" },
+          { era: "平安", person: "藤原道長", event: "この世をば…と詠んだことで有名" }
         ]
       },
       medieval: {
         label: "中世〜近世",
         beginner: [
-          { era: "鎌倉", event: "武士の政治が始まった" },
-          { era: "南北朝", event: "朝廷が南と北に分かれた" },
-          { era: "室町", event: "足利氏の幕府が続いた" },
-          { era: "戦国", event: "大名どうしの戦いが続いた" },
-          { era: "安土桃山", event: "織田信長と豊臣秀吉が活躍した" },
-          { era: "江戸", event: "徳川将軍の時代が続いた" }
+          { era: "鎌倉", person: "源頼朝", event: "鎌倉幕府を開いた" },
+          { era: "鎌倉", person: "北条政子", event: "尼将軍とよばれた" },
+          { era: "戦国", person: "織田信長", event: "天下統一を進めた" },
+          { era: "安土桃山", person: "豊臣秀吉", event: "刀狩を行った" },
+          { era: "江戸", person: "徳川家康", event: "江戸幕府を開いた" }
         ],
         intermediate: [
-          { era: "鎌倉", event: "源頼朝が幕府を開いた" },
-          { era: "南北朝", event: "後醍醐天皇のあと、朝廷が分かれた" },
-          { era: "室町", event: "金閣や銀閣に代表される文化が栄えた" },
-          { era: "戦国", event: "鉄砲が伝わり、城づくりが進んだ" },
-          { era: "安土桃山", event: "刀狩や太閤検地が行われた" },
-          { era: "江戸", event: "参勤交代や鎖国のしくみが整えられた" }
+          { era: "鎌倉", person: "北条泰時", event: "御成敗式目を定めた" },
+          { era: "鎌倉", person: "北条時宗", event: "元寇のときに中心となった" },
+          { era: "室町", person: "足利義満", event: "金閣を建てた" },
+          { era: "室町", person: "足利義政", event: "銀閣に代表される文化に関わった" },
+          { era: "戦国", person: "武田信玄", event: "甲斐を中心に力を広げた" },
+          { era: "江戸", person: "徳川家光", event: "参勤交代を制度として整えた" }
         ],
         advanced: [
-          { era: "鎌倉", event: "御恩と奉公で主従関係が結ばれた" },
-          { era: "南北朝", event: "足利尊氏の動きから武家政権が変化した" },
-          { era: "室町", event: "応仁の乱のあと、全国の統一がくずれた" },
-          { era: "戦国", event: "下剋上が広まり、実力で地位を得る時代になった" },
-          { era: "安土桃山", event: "南蛮貿易やキリスト教の広がりが見られた" },
-          { era: "江戸", event: "元禄文化や化政文化など町人文化が発展した" }
+          { era: "鎌倉", person: "日蓮", event: "新しい仏教を広めた" },
+          { era: "鎌倉", person: "親鸞", event: "浄土真宗を開いた" },
+          { era: "室町", person: "足利義満", event: "勘合貿易を進めた" },
+          { era: "室町", person: "雪舟", event: "水墨画で知られる" },
+          { era: "戦国", person: "上杉謙信", event: "越後で勢力をふるった" },
+          { era: "安土桃山", person: "千利休", event: "茶の湯を大成した" },
+          { era: "江戸", person: "徳川吉宗", event: "享保の改革を行った" },
+          { era: "江戸", person: "井原西鶴", event: "町人文化の中で活躍した" }
         ]
       },
       modern: {
         label: "近代〜現代",
         beginner: [
-          { era: "明治", event: "明治維新で国の仕組みが大きく変わった" },
-          { era: "大正", event: "民主主義の動きが広がった" },
-          { era: "昭和", event: "戦争と復興を経験した" },
-          { era: "平成", event: "インターネットが広く使われるようになった" },
-          { era: "令和", event: "今の時代" }
+          { era: "明治", person: "西郷隆盛", event: "明治維新で活躍した" },
+          { era: "明治", person: "福沢諭吉", event: "『学問のすゝめ』で知られる" },
+          { era: "大正", person: "原敬", event: "本格的な政党内閣をつくった" },
+          { era: "昭和", person: "吉田茂", event: "戦後の日本の立て直しに関わった" },
+          { era: "平成", person: "小渕恵三", event: "平成の元号発表で知られる" }
         ],
         intermediate: [
-          { era: "明治", event: "文明開化や学制の発布が進んだ" },
-          { era: "大正", event: "普通選挙への動きや大正デモクラシーが見られた" },
-          { era: "昭和", event: "東京オリンピックや高度経済成長があった" },
-          { era: "平成", event: "バブル崩壊や情報化社会が進んだ" },
-          { era: "令和", event: "新しい元号として始まった" }
+          { era: "明治", person: "伊藤博文", event: "初代内閣総理大臣になった" },
+          { era: "明治", person: "板垣退助", event: "自由民権運動を進めた" },
+          { era: "明治", person: "大久保利通", event: "明治政府の中心で活躍した" },
+          { era: "大正", person: "原敬", event: "平民宰相とよばれた" },
+          { era: "昭和", person: "昭和天皇", event: "長い昭和の時代を生きた天皇" },
+          { era: "平成", person: "小渕恵三", event: "平成の時代の始まりに関わった" }
         ],
         advanced: [
-          { era: "明治", event: "廃藩置県や憲法制定で近代国家づくりが進んだ" },
-          { era: "大正", event: "米騒動や政党政治の発展が見られた" },
-          { era: "昭和", event: "太平洋戦争、戦後復興、高度経済成長を経験した" },
-          { era: "平成", event: "阪神・淡路大震災や東日本大震災が起きた時代でもある" },
-          { era: "令和", event: "社会や技術の変化が今も続いている" }
+          { era: "明治", person: "陸奥宗光", event: "不平等条約改正に取り組んだ" },
+          { era: "明治", person: "伊藤博文", event: "大日本帝国憲法の制定に関わった" },
+          { era: "大正", person: "原敬", event: "政党政治の発展を支えた" },
+          { era: "昭和", person: "吉田茂", event: "戦後の外交や復興に大きく関わった" },
+          { era: "昭和", person: "田中角栄", event: "日本列島改造論で知られる" },
+          { era: "平成", person: "村山富市", event: "戦後50年談話で知られる" }
         ]
       },
       all: {
         label: "全時代",
         beginner: [
-          { era: "縄文", event: "土器を使い、狩りや採集をしていた" },
-          { era: "弥生", event: "米づくりが広まった" },
-          { era: "古墳", event: "大きなお墓がつくられた" },
-          { era: "飛鳥", event: "聖徳太子が活躍した" },
-          { era: "奈良", event: "大仏がつくられた" },
-          { era: "平安", event: "かな文字の文化が広まった" },
-          { era: "鎌倉", event: "武士の政治が始まった" },
-          { era: "南北朝", event: "朝廷が南と北に分かれた" },
-          { era: "室町", event: "足利氏の幕府が続いた" },
-          { era: "戦国", event: "大名どうしの戦いが続いた" },
-          { era: "安土桃山", event: "織田信長と豊臣秀吉が活躍した" },
-          { era: "江戸", event: "徳川将軍の時代が続いた" },
-          { era: "明治", event: "明治維新で国の仕組みが大きく変わった" },
-          { era: "大正", event: "民主主義の動きが広がった" },
-          { era: "昭和", event: "戦争と復興を経験した" },
-          { era: "平成", event: "インターネットが広く使われるようになった" },
-          { era: "令和", event: "今の時代" }
+          { era: "飛鳥", person: "聖徳太子", event: "十七条の憲法を定めた" },
+          { era: "奈良", person: "聖武天皇", event: "大仏づくりを進めた" },
+          { era: "平安", person: "紫式部", event: "『源氏物語』を書いた" },
+          { era: "鎌倉", person: "源頼朝", event: "鎌倉幕府を開いた" },
+          { era: "戦国", person: "織田信長", event: "天下統一を進めた" },
+          { era: "安土桃山", person: "豊臣秀吉", event: "刀狩を行った" },
+          { era: "江戸", person: "徳川家康", event: "江戸幕府を開いた" },
+          { era: "明治", person: "西郷隆盛", event: "明治維新で活躍した" },
+          { era: "明治", person: "福沢諭吉", event: "『学問のすゝめ』で知られる" },
+          { era: "大正", person: "原敬", event: "本格的な政党内閣をつくった" },
+          { era: "昭和", person: "吉田茂", event: "戦後の日本の立て直しに関わった" },
+          { era: "平成", person: "小渕恵三", event: "平成の元号発表で知られる" }
         ],
         intermediate: [
-          { era: "縄文", event: "竪穴住居で暮らし、土偶がつくられた" },
-          { era: "弥生", event: "金属器が広まり、むらから国へ発展した" },
-          { era: "古墳", event: "埴輪が並ぶ古墳が各地につくられた" },
-          { era: "飛鳥", event: "冠位十二階や十七条の憲法が定められた" },
-          { era: "奈良", event: "東大寺や正倉院などの文化が栄えた" },
-          { era: "平安", event: "紫式部や清少納言が活躍した" },
-          { era: "鎌倉", event: "源頼朝が幕府を開いた" },
-          { era: "南北朝", event: "後醍醐天皇のあと、朝廷が分かれた" },
-          { era: "室町", event: "金閣や銀閣に代表される文化が栄えた" },
-          { era: "戦国", event: "鉄砲が伝わり、城づくりが進んだ" },
-          { era: "安土桃山", event: "刀狩や太閤検地が行われた" },
-          { era: "江戸", event: "参勤交代や鎖国のしくみが整えられた" },
-          { era: "明治", event: "文明開化や学制の発布が進んだ" },
-          { era: "大正", event: "普通選挙への動きや大正デモクラシーが見られた" },
-          { era: "昭和", event: "東京オリンピックや高度経済成長があった" },
-          { era: "平成", event: "バブル崩壊や情報化社会が進んだ" },
-          { era: "令和", event: "新しい元号として始まった" }
+          { era: "飛鳥", person: "中大兄皇子", event: "大化の改新を進めた" },
+          { era: "奈良", person: "鑑真", event: "日本に正式な戒律を伝えた" },
+          { era: "平安", person: "最澄", event: "天台宗を広めた" },
+          { era: "鎌倉", person: "北条泰時", event: "御成敗式目を定めた" },
+          { era: "室町", person: "足利義満", event: "金閣を建てた" },
+          { era: "戦国", person: "武田信玄", event: "甲斐を中心に力を広げた" },
+          { era: "江戸", person: "徳川家光", event: "参勤交代を制度として整えた" },
+          { era: "明治", person: "伊藤博文", event: "初代内閣総理大臣になった" },
+          { era: "明治", person: "板垣退助", event: "自由民権運動を進めた" },
+          { era: "大正", person: "原敬", event: "平民宰相とよばれた" },
+          { era: "昭和", person: "昭和天皇", event: "長い昭和の時代を生きた天皇" },
+          { era: "平成", person: "小渕恵三", event: "平成の時代の始まりに関わった" }
         ],
         advanced: [
-          { era: "縄文", event: "貝塚がつくられ、定住生活が進んだ" },
-          { era: "弥生", event: "登呂遺跡に見られるような水田耕作が広まった" },
-          { era: "古墳", event: "大王中心の政治が進み、前方後円墳が広がった" },
-          { era: "飛鳥", event: "仏教が広まり、蘇我氏と物部氏が争った" },
-          { era: "奈良", event: "国ごとに国分寺が建てられた" },
-          { era: "平安", event: "遣唐使が廃止され、日本風の文化が育った" },
-          { era: "鎌倉", event: "御恩と奉公で主従関係が結ばれた" },
-          { era: "南北朝", event: "足利尊氏の動きから武家政権が変化した" },
-          { era: "室町", event: "応仁の乱のあと、全国の統一がくずれた" },
-          { era: "戦国", event: "下剋上が広まり、実力で地位を得る時代になった" },
-          { era: "安土桃山", event: "南蛮貿易やキリスト教の広がりが見られた" },
-          { era: "江戸", event: "元禄文化や化政文化など町人文化が発展した" },
-          { era: "明治", event: "廃藩置県や憲法制定で近代国家づくりが進んだ" },
-          { era: "大正", event: "米騒動や政党政治の発展が見られた" },
-          { era: "昭和", event: "太平洋戦争、戦後復興、高度経済成長を経験した" },
-          { era: "平成", event: "阪神・淡路大震災や東日本大震災が起きた時代でもある" },
-          { era: "令和", event: "社会や技術の変化が今も続いている" }
+          { era: "飛鳥", person: "小野妹子", event: "遣隋使として中国へ渡った" },
+          { era: "奈良", person: "行基", event: "民衆のために活動し、大仏建立にも関わった" },
+          { era: "平安", person: "空海", event: "真言宗を広めた" },
+          { era: "鎌倉", person: "親鸞", event: "浄土真宗を開いた" },
+          { era: "室町", person: "雪舟", event: "水墨画で知られる" },
+          { era: "戦国", person: "上杉謙信", event: "越後で勢力をふるった" },
+          { era: "安土桃山", person: "千利休", event: "茶の湯を大成した" },
+          { era: "江戸", person: "徳川吉宗", event: "享保の改革を行った" },
+          { era: "明治", person: "陸奥宗光", event: "不平等条約改正に取り組んだ" },
+          { era: "昭和", person: "田中角栄", event: "日本列島改造論で知られる" },
+          { era: "平成", person: "村山富市", event: "戦後50年談話で知られる" }
         ]
       }
     };
@@ -590,11 +592,11 @@
     const stageChips = document.getElementById("stage-chips");
     const levelChips = document.getElementById("level-chips");
     const eraList = document.getElementById("era-list");
-    const eventList = document.getElementById("event-list");
-    const resultElement = document.getElementById("result");
+    const mixList = document.getElementById("mix-list");
+    const countChip = document.getElementById("count-chip");
     const statusChip = document.getElementById("status-chip");
-    const pairCountChip = document.getElementById("pair-count-chip");
-    const matchLogList = document.getElementById("match-log-list");
+    const logList = document.getElementById("log-list");
+    const resultEl = document.getElementById("result");
     const nextButton = document.getElementById("next-button");
     const rewardBox = document.getElementById("reward-box");
 
@@ -612,22 +614,22 @@
       statusChip.textContent = text;
     }
 
-    function updatePairCount() {
-      pairCountChip.textContent = "全" + currentPairs.length + "組";
+    function updateCount() {
+      countChip.textContent = "全" + currentPairs.length + "組";
     }
 
     function resetLog() {
-      matchLogList.innerHTML = "<div>まだ組み合わせていません。</div>";
+      logList.innerHTML = "<div>まだ組み合わせていません。</div>";
     }
 
     function addLog(text, isCorrect) {
-      if (matchLogList.textContent.includes("まだ組み合わせていません。")) {
-        matchLogList.innerHTML = "";
+      if (logList.textContent.includes("まだ組み合わせていません。")) {
+        logList.innerHTML = "";
       }
       const div = document.createElement("div");
       div.className = isCorrect ? "log-ok" : "log-ng";
       div.textContent = text;
-      matchLogList.prepend(div);
+      logList.prepend(div);
     }
 
     function buildChips() {
@@ -665,12 +667,12 @@
 
     function renderCards() {
       eraList.innerHTML = "";
-      eventList.innerHTML = "";
+      mixList.innerHTML = "";
 
       const shuffledEras = shuffleArray(currentPairs);
-      const shuffledEvents = shuffleArray(currentPairs);
+      const shuffledMix = shuffleArray(currentPairs);
 
-      shuffledEras.forEach((item) => {
+      shuffledEras.forEach(item => {
         const card = document.createElement("button");
         card.className = "card era-card";
         card.textContent = item.era;
@@ -680,14 +682,19 @@
         eraList.appendChild(card);
       });
 
-      shuffledEvents.forEach((item) => {
+      shuffledMix.forEach(item => {
         const card = document.createElement("button");
-        card.className = "card event-card";
-        card.textContent = item.event;
+        card.className = "card mix-card";
+        card.dataset.person = item.person;
         card.dataset.event = item.event;
+        card.dataset.era = item.era;
         card.type = "button";
-        card.addEventListener("click", () => selectEvent(card));
-        eventList.appendChild(card);
+        card.innerHTML = `
+          <div class="mix-person">${item.person}</div>
+          <div class="mix-event">${item.event}</div>
+        `;
+        card.addEventListener("click", () => selectMix(card));
+        mixList.appendChild(card);
       });
     }
 
@@ -696,24 +703,24 @@
       document.querySelectorAll(".era-card").forEach(c => c.classList.remove("selected"));
       card.classList.add("selected");
       selectedEraCard = card;
-      updateStatus("次に出来事を選んでください");
+      updateStatus("次に右のカードを選んでください");
     }
 
-    function selectEvent(card) {
+    function selectMix(card) {
       if (!selectedEraCard) {
         updateStatus("先に左の時代を選んでください");
         return;
       }
-
       if (card.classList.contains("locked")) return;
 
       card.classList.add("selected");
 
       const selectedEra = selectedEraCard.dataset.era;
-      const selectedEvent = card.dataset.event;
-      const matchedPair = currentPairs.find(pair => pair.era === selectedEra);
+      const cardEra = card.dataset.era;
+      const person = card.dataset.person;
+      const event = card.dataset.event;
 
-      if (matchedPair && matchedPair.event === selectedEvent) {
+      if (selectedEra === cardEra) {
         selectedEraCard.classList.remove("selected");
         card.classList.remove("selected");
 
@@ -724,7 +731,7 @@
         card.disabled = true;
 
         matchedCount++;
-        addLog("○ " + selectedEra + " － " + selectedEvent, true);
+        addLog("○ " + selectedEra + " － " + person + "（" + event + "）", true);
         updateStatus("正解 " + matchedCount + " / " + currentPairs.length);
       } else {
         selectedEraCard.classList.remove("selected");
@@ -733,15 +740,15 @@
         selectedEraCard.classList.add("wrong");
         card.classList.add("wrong");
 
-        const eraCardRef = selectedEraCard;
-        const eventCardRef = card;
+        const eraRef = selectedEraCard;
+        const mixRef = card;
 
         setTimeout(() => {
-          eraCardRef.classList.remove("wrong");
-          eventCardRef.classList.remove("wrong");
-        }, 700);
+          eraRef.classList.remove("wrong");
+          mixRef.classList.remove("wrong");
+        }, 800);
 
-        addLog("× " + selectedEra + " － " + selectedEvent, false);
+        addLog("× " + selectedEra + " － " + person + "（" + event + "）", false);
         updateStatus("ちがいます。もう一回！");
       }
 
@@ -750,29 +757,27 @@
 
     function checkFinalResult() {
       if (matchedCount === currentPairs.length) {
-        resultElement.innerHTML = "🎉 すごい！全部の組み合わせが正解です！<br>このステージは完ぺきです。";
-        resultElement.className = "correct-text";
+        resultEl.innerHTML = "🎉 すごい！全部の組み合わせが正解です！<br>人物・出来事・時代がしっかりつながっています。";
+        resultEl.className = "ok-text";
         updateStatus("全問クリア！");
         nextButton.style.display = "block";
-        showRewardMessage();
+        showReward();
       } else {
-        resultElement.innerHTML = "今の正解数は " + matchedCount + " / " + currentPairs.length + " です。<br>緑になっていないものを見直してみましょう。";
-        resultElement.className = "wrong-text";
+        resultEl.innerHTML = "今の正解数は " + matchedCount + " / " + currentPairs.length + " です。<br>緑になっていないところを見直してみましょう。";
+        resultEl.className = "ng-text";
         updateStatus(matchedCount + "組正解");
         nextButton.style.display = "none";
         rewardBox.classList.remove("show");
       }
     }
 
-    function showRewardMessage() {
+    function showReward() {
       const isLastStage = currentStage === "all" && currentLevel === "advanced";
-
       if (isLastStage) {
-        rewardBox.innerHTML = "🏆 おめでとうございます！<br>全時代・全難易度クリアです。<br>もう立派な歴史マスターですね。";
+        rewardBox.innerHTML = "🏆 おめでとうございます！<br>総合パズルの全ステージをクリアしました。<br>もう立派な歴史マスターです。";
       } else {
-        rewardBox.innerHTML = "🌟 ステージクリア！<br>この調子で、次のステージにも挑戦してみましょう。";
+        rewardBox.innerHTML = "🌟 ステージクリア！<br>この調子で次のステージにも挑戦してみましょう。";
       }
-
       rewardBox.classList.add("show");
     }
 
@@ -804,12 +809,12 @@
       currentPairs = getCurrentPairs();
       matchedCount = 0;
       selectedEraCard = null;
-      resultElement.innerHTML = "";
-      resultElement.className = "";
+      resultEl.innerHTML = "";
+      resultEl.className = "";
       nextButton.style.display = "none";
       rewardBox.classList.remove("show");
       updateStatus("時代を選んでください");
-      updatePairCount();
+      updateCount();
       resetLog();
       renderCards();
     }
